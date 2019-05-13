@@ -18,6 +18,20 @@ CREATE TABLE products
     (item_id)
 );
 
+ALTER TABLE products
+ADD product_sales INT NULL;
+
+CREATE TABLE departments
+(
+    department_id INT NOT NULL
+    AUTO_INCREMENT,
+    department_name VARCHAR
+    (45) NULL,
+    over_head_cost INT NULL,
+    PRIMARY KEY
+    (department_id)
+);
+
     INSERT INTO products
         (product_name, department_name, price, stock_quantity)
     VALUES

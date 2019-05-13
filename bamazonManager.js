@@ -1,24 +1,23 @@
 // Pull in required dependencies
 var inquirer = require('inquirer');
 var mysql = require('mysql');
+require('dotenv').config();
 
 // Define the MySQL connection parameters
 var connection = mysql.createConnection({
-    host: 'localhost',
+    host: process.env.DB_HOST,
     port: 3306,
 
     // Your username
-    user: 'root',
+    user: process.env.DB_USER,
 
     // Your password
-    password: '',
+    password: process.env.DB_PASS,
     database: 'bamazon'
 });
 
 // promptManagerAction will present menu options to the manager and trigger appropriate logic
 function promptManagerAction() {
-    // console.log('___ENTER promptManagerAction___');
-
     // Prompt the manager to select an option
     inquirer.prompt([{
         type: 'list',
@@ -26,27 +25,29 @@ function promptManagerAction() {
         message: 'Please select an option:',
         choices: ['View Products for Sale', 'View Low Inventory', 'Add to Inventory', 'Add New Product'],
     }]).then(function (input) {
-        console.log(input.option);
         if (input.option === 'View Products for Sale') {
+            //show all of the products
             connection.query(`SELECT * FROM products`, function (error, results) {
                 if (error) throw error;
-                //console.log(results[0]);
                 for (let i = 0; i < results.length; i++) {
                     console.log(`Item Id: ${results[i].item_id} || Product Name: ${results[i].product_name} || Department: ${results[i].department_name} || Price: $${results[i].price} || Quantity: ${results[i].stock_quantity}
-        `);
+                    `);
                 }
             });
-            connection.end();
-        } else if (input.option === 'View Low Inventory') {
+            promptManagerAction();
+        }// show the items with stock_qunaity < 5
+        else if (input.option === 'View Low Inventory') {
             connection.query(`SELECT * FROM products WHERE stock_quantity < 5`, function (error, results) {
                 if (error) throw error;
                 for (let i = 0; i < results.length; i++) {
-                    console.log(`Item Id: ${results[i].item_id} || Product Name: ${results[i].product_name} || Department: ${results[i].department_name} || Price: $${results[i].price} || Quantity: ${results[i].stock_quantity}
+                    console.log(`Item Id: ${results[i].item_id} || Product Name: ${results[i].product_name} || Department: ${results[i].department_name} || Price: $${results[i].price} || Quantity: ${results[i].stock_quantity} || Product Sales: ${results[i].product_sales}
         `);
                 }
             });
-            connection.end();
-        } else if (input.option === 'Add to Inventory') {
+            //connection.end();
+            promptManagerAction();
+         } //prompt the user how much they want to add and of what item
+        else if (input.option === 'Add to Inventory') {
             inquirer.prompt([{
                     type: 'input',
                     name: 'item_id',
@@ -62,9 +63,12 @@ function promptManagerAction() {
                     filter: Number
                 }
             ]).then(function (input) {
+                //don't let user give negative number
                 if (input.quantity < 0) {
-                    console.log(`You must add a possitive number`)
-                } else {
+                    console.log(`You must add a possitive number`);
+                    promptManagerAction();
+                }//Add the desired quanity to the total stock of the desired product
+                else {
                     let itemID = input.item_id;
                     let quantity = input.quantity;
                     connection.query('SELECT * FROM `products` WHERE `item_id` = ?', [itemID], function (error, results, fields) {
@@ -75,12 +79,14 @@ function promptManagerAction() {
                         connection.query(`UPDATE products SET stock_quantity = ${newQuantity} WHERE item_id = ${itemID}`, function (error, results, fields) {
                             if (error) throw error;
                             console.log(`You have updated ${product} from ${oldQuantity} to ${newQuantity}`);
-                            connection.end();
+                            //connection.end();
+                            promptManagerAction();
                         });
                     });
                 }
             });
-        } else if (input.option === 'Add New Product') {
+        }//Prompt the user on which new product, which department it should be in, what the price is, and how many units
+        else if (input.option === 'Add New Product') {
             inquirer.prompt([{
                 type: 'input',
                 name: 'product_name',
@@ -104,11 +110,12 @@ function promptManagerAction() {
                 filter: Number
             }
             ]).then(function (input) {
+                //insert input into the db
                 connection.query(`INSERT INTO products (product_name, department_name, price, stock_quantity)
                 VALUES('${input.product_name}', '${input.department_name}', ${input.price}, ${input.stock_quantity})`, function (error, results, fields) {
                     if (error) throw error;
                     console.log(`You have added ${input.product_name} to the ${input.department_name} department at the price of $${input.price} per unit and a quanity of ${input.stock_quantity}`);
-                    connection.end();
+                    promptManagerAction();
                 });
             });
         }
