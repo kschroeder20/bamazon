@@ -13,15 +13,17 @@ var connection = mysql.createConnection({
 // Connec to DB
 connection.connect();
 //Show everything from the products table
-connection.query(`SELECT * FROM products`, function (error, results) {
-    if (error) throw error;
-    for (let i = 0; i < results.length; i++) {
-        console.log(`Item Id: ${results[i].item_id} || Product Name: ${results[i].product_name} || Department: ${results[i].department_name} || Price: $${results[i].price} || Quantity: ${results[i].stock_quantity} || Product Sales: $${results[i].product_sales}
+function showTable() {
+    connection.query(`SELECT * FROM products`, function (error, results) {
+        if (error) throw error;
+        for (let i = 0; i < results.length; i++) {
+            console.log(`Item Id: ${results[i].item_id} || Product Name: ${results[i].product_name} || Department: ${results[i].department_name} || Price: $${results[i].price} || Quantity: ${results[i].stock_quantity} || Product Sales: $${results[i].product_sales}
         `);
-    }
-    // run the user prompt
-    promptUserPurchase();
-});
+        }
+        // run the user prompt
+        promptUserPurchase();
+    });
+}
 
 function promptUserPurchase() {
     // Prompt the user to select an item
@@ -48,7 +50,7 @@ function promptUserPurchase() {
             //show that there isn't enough if the user asks for more than in stock
             if (quantity > results[0].stock_quantity) {
                 console.log(`Insufficient Quantity!`);
-                connection.end();
+                showTable();
             } else {
                 let newQuantity = results[0].stock_quantity - quantity;
                 let totalCost = quantity * results[0].price
@@ -61,11 +63,11 @@ function promptUserPurchase() {
                     if (error) throw error;
                     //show user their transaction
                     console.log(`Your total today is: $${totalCost}`);
-                    promptUserPurchase();
-                    connection.end();
+                    showTable()
                 });
             }
         });
 
     });
 }
+showTable();

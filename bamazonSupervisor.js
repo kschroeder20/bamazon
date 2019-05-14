@@ -33,17 +33,17 @@ function promptSupervisorAction() {
             connection.query(`SELECT departments.department_id, departments.department_name, departments.over_head_cost, products.product_sales
             FROM departments
             INNER JOIN products
-            ON departments.department_name = products.department_name`,
+            ON departments.department_name = products.department_name
+            ORDER BY department_id`,
                 function (err, results) {
-                    console.log(results);
                     if (err) throw err;
                     for (let i = 0; i < results.length; i++) {
                         let totalProfit = results[i].product_sales - results[i].over_head_cost;
                         console.log(`Department Id: ${results[i].department_id} || Department Name: ${results[i].department_name} || Over Head Cost: $${results[i].over_head_cost} || Product Sales: $${results[i].product_sales} || Total Profit: $${totalProfit}
                             `);
                     }
+                    promptSupervisorAction();
                 });
-            promptSupervisorAction();
         } // add new department to department table
         else if (input.option === 'Create New Department') {
             inquirer.prompt([{

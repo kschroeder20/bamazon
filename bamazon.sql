@@ -18,19 +18,9 @@ CREATE TABLE products
     (item_id)
 );
 
-ALTER TABLE products
+    ALTER TABLE products
 ADD product_sales INT NULL;
 
-CREATE TABLE departments
-(
-    department_id INT NOT NULL
-    AUTO_INCREMENT,
-    department_name VARCHAR
-    (45) NULL,
-    over_head_cost INT NULL,
-    PRIMARY KEY
-    (department_id)
-);
 
     INSERT INTO products
         (product_name, department_name, price, stock_quantity)
@@ -54,3 +44,28 @@ CREATE TABLE departments
         ('Ibuprophen', 'Pharmacy', 4.95, 4),
         ('Band Aid', 'Pharmacy', 3.25, 550),
         ('Ben & Jerry Ice Cream', 'Grocery', 3.25, 432);
+
+
+    USE bamazon;
+    CREATE TABLE departments
+    (
+        department_id INT NOT NULL
+        AUTO_INCREMENT,
+    department_name VARCHAR
+        (45) NULL,
+    over_head_cost INT NULL,
+    PRIMARY KEY
+        (department_id)
+);
+
+        INSERT INTO departments
+            (department_name, over_head_costs)
+        VALUES
+            ('Cosmetics', 100),
+            ('Grocery', 200),
+            ('Produce', 300),
+            ('Children', 400),
+            ('Clothing', 500),
+            ('Pet', 600),
+            ('Pharmacy', 700);
+

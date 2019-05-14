@@ -33,8 +33,8 @@ function promptManagerAction() {
                     console.log(`Item Id: ${results[i].item_id} || Product Name: ${results[i].product_name} || Department: ${results[i].department_name} || Price: $${results[i].price} || Quantity: ${results[i].stock_quantity}
                     `);
                 }
+                promptManagerAction();
             });
-            promptManagerAction();
         }// show the items with stock_qunaity < 5
         else if (input.option === 'View Low Inventory') {
             connection.query(`SELECT * FROM products WHERE stock_quantity < 5`, function (error, results) {
@@ -43,9 +43,9 @@ function promptManagerAction() {
                     console.log(`Item Id: ${results[i].item_id} || Product Name: ${results[i].product_name} || Department: ${results[i].department_name} || Price: $${results[i].price} || Quantity: ${results[i].stock_quantity} || Product Sales: ${results[i].product_sales}
         `);
                 }
+                 promptManagerAction();
             });
-            //connection.end();
-            promptManagerAction();
+           
          } //prompt the user how much they want to add and of what item
         else if (input.option === 'Add to Inventory') {
             inquirer.prompt([{
